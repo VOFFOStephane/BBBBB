@@ -8,7 +8,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["id"])){
-    var_dump($_POST);
+
     function verifierFormatDate($date) {
         $format = 'Y-m-d';
         $d = DateTime::createFromFormat($format, $date);
@@ -71,22 +71,26 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["id"])){
     if ($date_debut_stage && !verifierFormatDate($date_debut_stage)) {
         $errors[] = "Format de la date de début du stage invalide (attendu : YYYY-MM-DD).";
     }
-    if ($date_fin_stage && !verifierFormatDate($date_fin_stage)) {
-        $errors[] = "Format de la date de fin du stage invalide (attendu : YYYY-MM-DD).";
-    }
-    if (!is_null($date_debut_stage) && is_null($date_fin_stage)) {
-        $errors[] = "Impossible de valider une date de debut sans date de fin.";
-    }
-    if (is_null($date_debut_stage) && !is_null($date_fin_stage)) {
-        $errors[] = "Impossible de valider une date de fin sans date de début.";
-    }
-    if (!is_null($date_debut_stage) && !is_null($date_fin_stage)) {
-        $debut = new DateTime($date_debut_stage);
-        $fin = new DateTime($date_fin_stage);
-
-        if ($fin < $debut) {
-            $errors[] = "La date de fin du stage doit être postérieure à la date de début.";
+    if(!empty($entreprise)) {
+        if ($date_fin_stage && !verifierFormatDate($date_fin_stage)) {
+            $errors[] = "Format de la date de fin du stage invalide (attendu : YYYY-MM-DD).";
         }
+        if (!is_null($date_debut_stage) && is_null($date_fin_stage)) {
+            $errors[] = "Impossible de valider une date de debut sans date de fin.";
+        }
+        if (is_null($date_debut_stage) && !is_null($date_fin_stage)) {
+            $errors[] = "Impossible de valider une date de fin sans date de début.";
+        }
+        if (!is_null($date_debut_stage) && !is_null($date_fin_stage)) {
+            $debut = new DateTime($date_debut_stage);
+            $fin = new DateTime($date_fin_stage);
+
+            if ($fin < $debut) {
+                $errors[] = "La date de fin du stage doit être postérieure à la date de début.";
+            }
+        }
+    }else{
+        $errors[]="vous ne pouvez pas mettre les dates de debut et de fin sans lieu de stage";
     }
     if (!preg_match("/^\+\d{2}\s\d{8}$/", $telephone)) {
         $errors[] = "Format de téléphone invalide. Exemple: +32 00000000";

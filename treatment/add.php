@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once '../connect.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    var_dump($_POST);
     $errors = array();
     function verifierFormatDate($date) {
         $format = 'Y-m-d';
@@ -65,27 +64,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($date_naissance && !verifierFormatDate($date_naissance)) {
         $errors[] = "Format de la date de naissance invalide (attendu : YYYY-MM-DD).";
     }
-    if ($date_debut_stage && !verifierFormatDate($date_debut_stage)) {
-        $errors[] = "Format de la date de début du stage invalide (attendu : YYYY-MM-DD).";
-    }
-    if ($date_fin_stage && !verifierFormatDate($date_fin_stage)) {
+    if (!empty($entreprise)) {
+        if ($date_debut_stage && !verifierFormatDate($date_debut_stage)) {
+            $errors[] = "Format de la date de début du stage invalide (attendu : YYYY-MM-DD).";
+        }
+        if ($date_fin_stage && !verifierFormatDate($date_fin_stage)) {
             $errors[] = "Format de la date de fin du stage invalide (attendu : YYYY-MM-DD).";
-    }
-    if (!is_null($date_debut_stage) && is_null($date_fin_stage)) {
+        }
+        if (!is_null($date_debut_stage) && is_null($date_fin_stage)) {
             $errors[] = "Impossible de valider une date de debut sans date de fin.";
         }
-    if (is_null($date_debut_stage) && !is_null($date_fin_stage)) {
-        $errors[] = "Impossible de valider une date de fin sans date de début.";
-    }
-    if (!is_null($date_debut_stage) && !is_null($date_fin_stage)) {
-        $debut = new DateTime($date_debut_stage);
-        $fin = new DateTime($date_fin_stage);
-
-        if ($fin < $debut) {
-            $errors[] = "La date de fin du stage doit être postérieure à la date de début.";
+        if (is_null($date_debut_stage) && !is_null($date_fin_stage)) {
+            $errors[] = "Impossible de valider une date de fin sans date de début.";
         }
+        if (!is_null($date_debut_stage) && !is_null($date_fin_stage)) {
+            $debut = new DateTime($date_debut_stage);
+            $fin = new DateTime($date_fin_stage);
+
+            if ($fin < $debut) {
+                $errors[] = "La date de fin du stage doit être postérieure à la date de début.";
+            }
+        }
+    }else{
+        $errors[]="vous ne pouvez pas mettre les dates de debut et de fin sans lieu de stage";
     }
-    var_dump($date_fin_stage,$date_naissance,$date_debut_stage);
+
 
 
     $date_naissance_obj = new DateTime($date_naissance);
